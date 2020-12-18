@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import { CovidApi } from "./resource/server";
+import { CovidApi } from "./server";
 
 (() => {
     dotenv.config();

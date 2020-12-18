@@ -10,5 +10,4 @@ export class ActiveCasesService extends AbstractCasesService {
 
         return activeCases.map(cases => AbstractCasesService.mapAllField(cases));
     }
-
 }

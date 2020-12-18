@@ -1,10 +1,12 @@
 import * as restify from 'restify';
-import { ApplicationDatabase } from '../database/application-database';
-import { ActiveCasesService } from '../service/active-cases.service';
-import { ConfirmedCasesService } from '../service/confirmed-cases.service';
-import { DeadCasesService } from '../service/dead-cases.service';
-import { RecoveredCasesService } from '../service/recovered-cases.service';
-import { SuspectCasesService } from '../service/suspect-cases.service';
+import { FilterValidation } from './filter-validation';
+import { AbstractCasesService } from './service/abstract.service';
+import { ActiveCasesService } from './service/active-cases.service';
+import { ConfirmedCasesService } from './service/confirmed-cases.service';
+import { DeadCasesService } from './service/dead-cases.service';
+import { LastUpdateCasesService } from './service/last-update-cases.service';
+import { RecoveredCasesService } from './service/recovered-cases.service';
+import { SuspectCasesService } from './service/suspect-cases.service';
 
 export class CovidApi {
 
@@ -34,30 +36,44 @@ export class CovidApi {
         this.server.get('/confirmed', CovidApi.getConfirmedCases);
         this.server.get('/dead', CovidApi.getDeadCases);
         this.server.get('/recovered', CovidApi.getRecoveredCases);
+        this.server.get('/last_update', CovidApi.getLastUpdate);
     }
 
     private static async getActiveCases(req: restify.Request, res: restify.Response, next: restify.Next) {
         const service = new ActiveCasesService();
-        res.send(200, await service.getResponse(req));
+        await CovidApi.sendResponse(req, res, service);
     }
 
     private static async getSuspectCases(req: restify.Request, res: restify.Response, next: restify.Next) {
         const service = new SuspectCasesService();
-        res.send(200, await service.getResponse(req));
+        await CovidApi.sendResponse(req, res, service);
     }
 
     private static async getConfirmedCases(req: restify.Request, res: restify.Response, next: restify.Next) {
         const service = new ConfirmedCasesService();
-        res.send(200, await service.getResponse(req));
+        await CovidApi.sendResponse(req, res, service);
     }
 
     private static async getDeadCases(req: restify.Request, res: restify.Response, next: restify.Next) {
         const service = new DeadCasesService();
-        res.send(200, await service.getResponse(req));
+        await CovidApi.sendResponse(req, res, service);
     }
 
     private static async getRecoveredCases(req: restify.Request, res: restify.Response, next: restify.Next) {
         const service = new RecoveredCasesService();
-        res.send(200, await service.getResponse(req));
+        await CovidApi.sendResponse(req, res, service);
+    }
+
+    private static async getLastUpdate(req: restify.Request, res: restify.Response, next: restify.Next) {
+        const service = new LastUpdateCasesService();
+        await CovidApi.sendResponse(req, res, service);
+    }
+
+    private static async sendResponse(request: restify.Request, response: restify.Response, service: AbstractCasesService): Promise<any> {
+        if (!FilterValidation.isValidFilter(request.query)) {
+            return Promise.resolve(response.send(400));
+        }
+
+        return Promise.resolve(response.send(200, await service.getResponse(request)));
     }
 }

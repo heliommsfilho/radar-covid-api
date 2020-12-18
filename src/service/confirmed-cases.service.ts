@@ -6,9 +6,9 @@ export class ConfirmedCasesService extends AbstractCasesService {
 
     public async getResponse(request: Request) {
         const filter = this.paramsToFilter(request.query);
-        const activeCases = await ApplicationDatabase.getConfirmedCases(filter);
+        const confirmedCases = await ApplicationDatabase.getConfirmedCases(filter);
 
-        return activeCases.map(cases => AbstractCasesService.mapAllField(cases));
+        return confirmedCases.map(cases => AbstractCasesService.mapAllRegions(cases));
     }
 
 }

@@ -1,12 +1,12 @@
 import * as mongoose from "mongoose";
 
 export interface ICases extends mongoose.Document {
-    date: string,
+    date: number,
     cases: Map<string, number>
 }
 
 const casesSchema = new mongoose.Schema({
-    date: { type: String },
+    date: { type: Number },
     cases: { type: Map, of: Number }
 });
 

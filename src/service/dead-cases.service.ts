@@ -6,9 +6,9 @@ export class DeadCasesService extends AbstractCasesService {
 
     public async getResponse(request: Request) {
         const filter = this.paramsToFilter(request.query);
-        const activeCases = await ApplicationDatabase.getDeadCases(filter);
+        const deadCases = await ApplicationDatabase.getDeadCases(filter);
 
-        return activeCases.map(cases => AbstractCasesService.mapAllField(cases));
+        return deadCases.map(cases => AbstractCasesService.mapAllRegions(cases));
     }
 
 }

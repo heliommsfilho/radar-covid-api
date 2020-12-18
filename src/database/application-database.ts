@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import * as dotenv from "dotenv";
 import { ActiveModel, ConfirmedModel, DeadModel, ICases, RecoveredModel, SuspectModel } from "./case.model";
 import { CasesQueryFilter } from "./cases-query.filter";
 
@@ -25,6 +24,19 @@ export class ApplicationDatabase {
         return this.executeQuery(RecoveredModel, filter);
     }
 
+    public static async getLastUpdate() {
+        this.connect();
+        console.log(`Getting last update information`);
+        const lastActive = await ActiveModel.find().sort({ date: 'desc' }).limit(1).exec();
+        const lastConfirmed = await ConfirmedModel.find().sort({ date: 'desc' }).limit(1).exec();
+        const lastDead = await DeadModel.find().sort({ date: 'desc' }).limit(1).exec();
+        const lastRecovered = await RecoveredModel.find().sort({ date: 'desc' }).limit(1).exec();
+        const lastSuspect = await SuspectModel.find().sort({ date: 'desc' }).limit(1).exec();
+        this.disconnect();
+
+        return { lastActive, lastConfirmed, lastDead, lastRecovered, lastSuspect };
+    }
+
     private static connect() {
 
         if (!process.env.MONGO_URL) {
@@ -45,11 +57,27 @@ export class ApplicationDatabase {
     }
 
     private static async executeQuery(model: mongoose.Model<ICases>, filter: CasesQueryFilter) {
+        const criteriaQuery = this.getCriteriaQuery(filter);
         this.connect();
-        console.log(`Performing query in '${model.modelName}' with filters: ${JSON.stringify(filter)}`);
-        const cases = await model.find(filter).exec();
+        console.log(`Performing query in '${model.modelName}' with filters: ${JSON.stringify(criteriaQuery)}`);
+        const cases = await model.find(criteriaQuery).exec();
         this.disconnect();
 
         return cases;
+    }
+
+    private static getCriteriaQuery(filter: any): any {
+        const day = filter.day;
+        const endDay = filter.endDay;
+
+        if (day && endDay) {
+            return  { date: { $gte: day, $lte: endDay } };
+        }
+
+        if (day) {
+            return { date: day };
+        }
+
+        return {};
     }
 }

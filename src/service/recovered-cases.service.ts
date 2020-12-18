@@ -6,9 +6,9 @@ export class RecoveredCasesService extends AbstractCasesService {
 
     public async getResponse(request: Request) {
         const filter = this.paramsToFilter(request.query);
-        const activeCases = await ApplicationDatabase.getRecoveredCases(filter);
+        const recoveredCases = await ApplicationDatabase.getRecoveredCases(filter);
 
-        return activeCases.map(cases => AbstractCasesService.mapAllField(cases));
+        return recoveredCases.map(cases => AbstractCasesService.mapAllRegions(cases));
     }
 
 }

@@ -26,7 +26,11 @@ export abstract class AbstractCasesService {
         const filter: CasesQueryFilter = {};
 
         if (params?.day) {
-            filter.date = params.day;
+            filter.day = params.day;
+        }
+
+        if (params?.endDay) {
+            filter.endDay = params.endDay;
         }
 
         return filter;
