@@ -10,6 +10,12 @@ _For more information about database deployment see: [Radar COVID Updater Tool](
 
 ## Available endpoints
 
+### Last update
+```
+[GET] /last_update
+/* Returns the most recent information for all types of cases */
+```
+
 ### Active cases
 ```
 [GET] /active
